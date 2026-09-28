@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Wakibi Market</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-container">
+            <a href="index.html" class="brand">
+                <span class="logo-mark" aria-hidden="true">W</span>
+                <span class="brand-text">
+                    <span class="brand-title">Wakibi Market</span>
+                    <span class="brand-subtitle">Shop Uganda with ease</span>
+                </span>
+            </a>
+        </div>
+    </header>
+
+    <main class="checkout-page">
+        <div class="container">
+            <div class="checkout-card">
+                <span class="section-kicker">Order confirmed</span>
+                <h1>Thank you for shopping with us!</h1>
+                <p>Your order has been placed successfully.</p>
+
+                <div class="order-details" id="checkout-order-details"></div>
+
+                <div class="payment-section">
+                    <h2>Select payment method</h2>
+                    <div class="payment-options">
+                        <label class="payment-option">
+                            <input type="radio" name="payment-method" value="MTN Mobile Money" checked>
+                            <span>MTN Mobile Money</span>
+                        </label>
+
+                        <label class="payment-option">
+                            <input type="radio" name="payment-method" value="Airtel Money">
+                            <span>Airtel Money</span>
+                        </label>
+
+                        <label class="payment-option">
+                            <input type="radio" name="payment-method" value="Africell Money">
+                            <span>Africell Money</span>
+                        </label>
+
+                        <label class="payment-option">
+                            <input type="radio" name="payment-method" value="Bank Transfer">
+                            <span>Bank Transfer</span>
+                        </label>
+
+                        <label class="payment-option">
+                            <input type="radio" name="payment-method" value="Cash on Delivery">
+                            <span>Cash on Delivery</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="checkout-actions">
+                    <button type="button" class="btn-primary" id="confirm-payment-btn">Confirm payment</button>
+                    <a href="index.html" class="btn-secondary">Back to home</a>
+                    <a href="cart.html" class="btn-secondary">View cart</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="cart.js"></script>
+    <script>
+        (function () {
+            const order = JSON.parse(localStorage.getItem('wakibi_market_last_order') || 'null');
+            const details = document.getElementById('checkout-order-details');
+
+            function renderOrder() {
+                if (!details) return;
+
+                if (!order) {
+                    details.innerHTML = '<p>No recent order found.</p>';
+                    return;
+                }
+
+                const itemList = (order.items || []).map(function (item) {
+                    return '<li>' + item.name + ' × ' + item.quantity + '</li>';
+                }).join('');
+
+                details.innerHTML = `
+                    <div class="summary-box">
+                        <p><strong>Order ID:</strong> ${order.orderId}</p>
+                        <p><strong>Total:</strong> UGX ${Number(order.total || 0).toLocaleString()}</p>
+                        <p><strong>Delivery:</strong> UGX ${Number(order.delivery || 0).toLocaleString()}</p>
+                    </div>
+                    <ul class="checkout-items">${itemList}</ul>
+                `;
+            }
+
+            renderOrder();
+
+            const confirmButton = document.getElementById('confirm-payment-btn');
+            if (confirmButton) {
+                confirmButton.addEventListener('click', function () {
+                    const selectedMethod = document.querySelector('input[name="payment-method"]:checked');
+                    const method = selectedMethod ? selectedMethod.value : 'Mobile Money';
+
+                    if (order) {
+                        order.paymentMethod = method;
+                        localStorage.setItem('wakibi_market_last_order', JSON.stringify(order));
+                    }
+
+                    window.location.href = 'confirm-payment.html';
+                });
+            }
+        })();
+    </script>
+</body>
+</html>
